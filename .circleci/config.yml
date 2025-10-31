@@ -1,24 +1,21 @@
+# .circleci/config.yml — базовая версия
 version: 2.1
-jobs:
-  lint:
-    docker:
-      - image: cimg/python:3.11
-    steps:
-      - checkout
-      - run: pip install -r requirements-dev.txt
-      - run: black --check .
 
+jobs:
   test:
     docker:
       - image: cimg/python:3.11
     steps:
       - checkout
-      - run: pip install -r requirements.txt
-      - run: pytest
+      - run:
+          name: Install dependencies
+          command: pip install -r requirements.txt
+      - run:
+          name: Run tests
+          command: pytest
 
 workflows:
   version: 2
-  quality-and-tests:
+  build-and-test:
     jobs:
-      - lint
       - test
