@@ -1,4 +1,3 @@
-# .circleci/config.yml — базовая версия
 version: 2.1
 
 jobs:
@@ -7,15 +6,42 @@ jobs:
       - image: cimg/python:3.11
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - v1-deps
       - run:
           name: Install dependencies
           command: pip install -r requirements.txt
+      - save_cache:
+          paths:
+            - ~/.cache/pip
+          key: v1-deps
       - run:
           name: Run tests
           command: pytest
+
+  code-formatting:
+    docker:
+      - image: cimg/python:3.11
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-deps
+      - run:
+          name: Install dependencies
+          command: pip install -r requirements.txt
+      - save_cache:
+          paths:
+            - ~/.cache/pip
+          key: v1-deps
+      - run:
+          name: Check code formatting with black
+          command: black --check .
 
 workflows:
   version: 2
   build-and-test:
     jobs:
       - test
+      - code-formatting
